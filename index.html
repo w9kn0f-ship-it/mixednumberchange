@@ -456,7 +456,7 @@
             color: #38bdf8;
         }
 
-        /* 입력 폼 (대분수 입력용 그룹) */
+        /* 입력 폼 (분모, 분자 모두 비워진 입력창) */
         .answer-input-box {
             display: flex;
             gap: 8px;
@@ -468,8 +468,9 @@
         .answer-group {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
             flex: 1;
+            justify-content: center;
         }
 
         .answer-input {
@@ -825,7 +826,7 @@
                     <div class="explanation-desc" id="explanationDesc"></div>
                 </div>
 
-                <!-- 주관식 입력 폼 (동적 변경: 대분수 또는 가분수 입력) -->
+                <!-- 주관식 입력 폼 (분모, 분자 모두 비워진 입력창) -->
                 <div class="answer-input-box" id="answerInputBox">
                     <div id="inputContainer" class="answer-group">
                         <!-- JS로 동적 생성됨 -->
@@ -886,28 +887,27 @@
         let selectedEquipment = equipmentPool[0];
         let inventory = [];
 
-        // 📌 대분수 ↔ 가분수 변환 문제 데이터 생성
-        // type: 'to_improper' (대분수를 가분수로), 'to_mixed' (가분수를 대분수로)
+        // 📌 대분수 ↔ 가분수 변환 문제 데이터 (자연수 1~5, 분모 2~9 다양하게 구성)
         const mathQuizData = [
-            // 대분수 -> 가분수
-            { type: 'to_improper', whole: 2, numr: 1, den: 3, ansNum: 7, ansDen: 3, hint: "자연수 2와 분모 3을 곱한 뒤(2×3=6), 분자 1을 더하세요. (6+1=7)" },
-            { type: 'to_improper', whole: 3, numr: 2, den: 4, ansNum: 14, ansDen: 4, hint: "자연수 3과 분모 4를 곱한 뒤(3×4=12), 분자 2를 더하세요. (12+2=14)" },
-            { type: 'to_improper', whole: 1, numr: 3, den: 5, ansNum: 8, ansDen: 5, hint: "자연수 1과 분모 5를 곱한 뒤(1×5=5), 분자 3을 더하세요. (5+3=8)" },
-            { type: 'to_improper', whole: 4, numr: 1, den: 2, ansNum: 9, ansDen: 2, hint: "자연수 4와 분모 2를 곱한 뒤(4×2=8), 분자 1을 더하세요. (8+1=9)" },
-            { type: 'to_improper', whole: 2, numr: 3, den: 4, ansNum: 11, ansDen: 4, hint: "자연수 2와 분모 4를 곱한 뒤(2×4=8), 분자 3을 더하세요. (8+3=11)" },
-            { type: 'to_improper', whole: 3, numr: 1, den: 6, ansNum: 19, ansDen: 6, hint: "자연수 3과 분모 6을 곱한 뒤(3×6=18), 분자 1을 더하세요. (18+1=19)" },
-            { type: 'to_improper', whole: 5, numr: 2, den: 3, ansNum: 17, ansDen: 3, hint: "자연수 5와 분모 3을 곱한 뒤(5×3=15), 분자 2를 더하세요. (15+2=17)" },
-            { type: 'to_improper', whole: 2, numr: 4, den: 7, ansNum: 18, ansDen: 7, hint: "자연수 2와 분모 7을 곱한 뒤(2×7=14), 분자 4를 더하세요. (14+4=18)" },
-            
-            // 가분수 -> 대분수
-            { type: 'to_mixed', numr: 7, den: 3, ansWhole: 2, ansNum: 1, ansDen: 3, hint: "분자 7을 분모 3으로 나누면 몫이 2, 나머지가 1입니다." },
-            { type: 'to_mixed', numr: 9, den: 2, ansWhole: 4, ansNum: 1, ansDen: 2, hint: "분자 9를 분모 2로 나누면 몫이 4, 나머지가 1입니다." },
-            { type: 'to_mixed', numr: 11, den: 4, ansWhole: 2, ansNum: 3, ansDen: 4, hint: "분자 11을 분모 4로 나누면 몫이 2, 나머지가 3입니다." },
-            { type: 'to_mixed', numr: 13, den: 5, ansWhole: 2, ansNum: 3, ansDen: 5, hint: "분자 13을 분모 5로 나누면 몫이 2, 나머지가 3입니다." },
-            { type: 'to_mixed', numr: 15, den: 4, ansWhole: 3, ansNum: 3, ansDen: 4, hint: "분자 15를 분모 4로 나누면 몫이 3, 나머지가 3입니다." },
-            { type: 'to_mixed', numr: 17, den: 5, ansWhole: 3, ansNum: 2, ansDen: 5, hint: "분자 17을 분모 5로 나누면 몫이 3, 나머지가 2입니다." },
-            { type: 'to_mixed', numr: 19, den: 6, ansWhole: 3, ansNum: 1, ansDen: 6, hint: "분자 19를 분모 6으로 나누면 몫이 3, 나머지가 1입니다." },
-            { type: 'to_mixed', numr: 22, den: 7, ansWhole: 3, ansNum: 1, ansDen: 7, hint: "분자 22를 분모 7로 나누면 몫이 3, 나머지가 1입니다." }
+            // 대분수 -> 가분수 (자연수 다양화)
+            { type: 'to_improper', whole: 1, numr: 2, den: 3, ansNum: 5, ansDen: 3, hint: "자연수 1과 분모 3을 곱한 뒤(1×3=3), 분자 2를 더하세요. (3+2=5)" },
+            { type: 'to_improper', whole: 2, numr: 1, den: 4, ansNum: 9, ansDen: 4, hint: "자연수 2와 분모 4를 곱한 뒤(2×4=8), 분자 1을 더하세요. (8+1=9)" },
+            { type: 'to_improper', whole: 3, numr: 2, den: 5, ansNum: 17, ansDen: 5, hint: "자연수 3과 분모 5를 곱한 뒤(3×5=15), 분자 2를 더하세요. (15+2=17)" },
+            { type: 'to_improper', whole: 4, numr: 3, den: 7, ansNum: 31, ansDen: 7, hint: "자연수 4와 분모 7을 곱한 뒤(4×7=28), 분자 3을 더하세요. (28+3=31)" },
+            { type: 'to_improper', whole: 5, numr: 1, den: 6, ansNum: 31, ansDen: 6, hint: "자연수 5와 분모 6을 곱한 뒤(5×6=30), 분자 1을 더하세요. (30+1=31)" },
+            { type: 'to_improper', whole: 2, numr: 3, den: 8, ansNum: 19, ansDen: 8, hint: "자연수 2와 분모 8을 곱한 뒤(2×8=16), 분자 3을 더하세요. (16+3=19)" },
+            { type: 'to_improper', whole: 4, numr: 2, den: 9, ansNum: 38, ansDen: 9, hint: "자연수 4와 분모 9를 곱한 뒤(4×9=36), 분자 2를 더하세요. (36+2=38)" },
+            { type: 'to_improper', whole: 3, numr: 4, den: 5, ansNum: 19, ansDen: 5, hint: "자연수 3과 분모 5를 곱한 뒤(3×5=15), 분자 4를 더하세요. (15+4=19)" },
+
+            // 가분수 -> 대분수 (자연수 및 분모 다양화)
+            { type: 'to_mixed', numr: 7, den: 3, ansWhole: 2, ansNum: 1, ansDen: 3, hint: "분자 7을 분모 3으로 나누면 몫이 2(자연수), 나머지가 1(분자)입니다." },
+            { type: 'to_mixed', numr: 11, den: 4, ansWhole: 2, ansNum: 3, ansDen: 4, hint: "분자 11을 분모 4로 나누면 몫이 2(자연수), 나머지가 3(분자)입니다." },
+            { type: 'to_mixed', numr: 17, den: 5, ansWhole: 3, ansNum: 2, ansDen: 5, hint: "분자 17을 분모 5로 나누면 몫이 3(자연수), 나머지가 2(분자)입니다." },
+            { type: 'to_mixed', numr: 22, den: 6, ansWhole: 3, ansNum: 4, ansDen: 6, hint: "분자 22를 분모 6으로 나누면 몫이 3(자연수), 나머지가 4(분자)입니다." },
+            { type: 'to_mixed', numr: 29, den: 7, ansWhole: 4, ansNum: 1, ansDen: 7, hint: "분자 29를 분모 7로 나누면 몫이 4(자연수), 나머지가 1(분자)입니다." },
+            { type: 'to_mixed', numr: 35, den: 8, ansWhole: 4, ansNum: 3, ansDen: 8, hint: "분자 35를 분모 8로 나누면 몫이 4(자연수), 나머지가 3(분자)입니다." },
+            { type: 'to_mixed', numr: 43, den: 9, ansWhole: 4, ansNum: 7, ansDen: 9, hint: "분자 43을 분모 9로 나누면 몫이 4(자연수), 나머지가 7(분자)입니다." },
+            { type: 'to_mixed', numr: 18, den: 5, ansWhole: 3, ansNum: 3, ansDen: 5, hint: "분자 18을 분모 5로 나누면 몫이 3(자연수), 나머지가 3(분자)입니다." }
         ];
 
         let currentQuizIndex = 0;
@@ -974,7 +974,7 @@
                 inputContainer.innerHTML = `
                     <div class="fraction-display" style="width:100%;">
                         <div class="fraction-numerator"><input type="number" id="ansNum" class="answer-input" placeholder="분자" onkeydown="if(event.key==='Enter') submitAnswer()"></div>
-                        <div class="fraction-denominator"><span style="color:#94a3b8; font-weight:bold;">${activeQuiz.den} (고정)</span></div>
+                        <div class="fraction-denominator"><input type="number" id="ansDen" class="answer-input" placeholder="분모" onkeydown="if(event.key==='Enter') submitAnswer()"></div>
                     </div>
                 `;
             } else {
@@ -991,7 +991,7 @@
                         <input type="number" id="ansWhole" class="answer-input" placeholder="자연수" style="max-width:80px;" onkeydown="if(event.key==='Enter') submitAnswer()">
                         <div class="fraction-display" style="flex:1;">
                             <div class="fraction-numerator"><input type="number" id="ansNum" class="answer-input" placeholder="분자" onkeydown="if(event.key==='Enter') submitAnswer()"></div>
-                            <div class="fraction-denominator"><span style="color:#94a3b8; font-weight:bold;">${activeQuiz.den}</span></div>
+                            <div class="fraction-denominator"><input type="number" id="ansDen" class="answer-input" placeholder="분모" onkeydown="if(event.key==='Enter') submitAnswer()"></div>
                         </div>
                     </div>
                 `;
@@ -1023,21 +1023,23 @@
 
             if (activeQuiz.type === 'to_improper') {
                 const numVal = document.getElementById('ansNum').value.trim();
-                if (numVal === "") {
+                const denVal = document.getElementById('ansDen').value.trim();
+                if (numVal === "" || denVal === "") {
                     warningBox.style.display = 'block';
                     return;
                 }
                 warningBox.style.display = 'none';
-                if (Number(numVal) === activeQuiz.ansNum) isCorrect = true;
+                if (Number(numVal) === activeQuiz.ansNum && Number(denVal) === activeQuiz.ansDen) isCorrect = true;
             } else {
                 const wholeVal = document.getElementById('ansWhole').value.trim();
                 const numVal = document.getElementById('ansNum').value.trim();
-                if (wholeVal === "" || numVal === "") {
+                const denVal = document.getElementById('ansDen').value.trim();
+                if (wholeVal === "" || numVal === "" || denVal === "") {
                     warningBox.style.display = 'block';
                     return;
                 }
                 warningBox.style.display = 'none';
-                if (Number(wholeVal) === activeQuiz.ansWhole && Number(numVal) === activeQuiz.ansNum) isCorrect = true;
+                if (Number(wholeVal) === activeQuiz.ansWhole && Number(numVal) === activeQuiz.ansNum && Number(denVal) === activeQuiz.ansDen) isCorrect = true;
             }
 
             hasAnsweredCurrent = true;
@@ -1112,7 +1114,7 @@
                 updateStatsUI();
 
                 const explanationBox = document.getElementById('explanationBox');
-                let correctStr = activeQuiz.type === 'to_improper' ? `${activeQuiz.ansNum}/${activeQuiz.den}` : `${activeQuiz.ansWhole}과 ${activeQuiz.ansNum}/${activeQuiz.den}`;
+                let correctStr = activeQuiz.type === 'to_improper' ? `${activeQuiz.ansNum}/${activeQuiz.ansDen}` : `${activeQuiz.ansWhole}과 ${activeQuiz.ansNum}/${activeQuiz.ansDen}`;
                 document.getElementById('explanationDesc').innerText = `💡 정답은 [ ${correctStr} ] 입니다.\n📌 풀이 팁: ${activeQuiz.hint}`;
                 explanationBox.style.display = 'block';
 
