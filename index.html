@@ -271,11 +271,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 20px;
+            border: 1px solid #334155;
         }
 
         .assembled-pet-box img {
-            width: 100px;
-            height: 100px;
+            width: 85px;
+            height: 85px;
             object-fit: contain;
             filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.6));
             animation: itemFloat 2s infinite ease-in-out;
@@ -456,7 +459,7 @@
             color: #38bdf8;
         }
 
-        /* 입력 폼 (분모, 분자 모두 비워진 입력창) */
+        /* 입력 폼 */
         .answer-input-box {
             display: flex;
             gap: 8px;
@@ -777,7 +780,7 @@
 
                 <div class="pet-info">
                     <div class="pet-name-text" id="petName">초보자의 루비 검</div>
-                    <div class="pet-status-text" id="petStatus">🔥 성공 확률: 95% 강화 도전!</div>
+                    <div class="pet-status-text" id="petStatus">🔥 성공 확률: 85% 강화 도전!</div>
                 </div>
 
                 <!-- 강화 게이지바 -->
@@ -826,7 +829,7 @@
                     <div class="explanation-desc" id="explanationDesc"></div>
                 </div>
 
-                <!-- 주관식 입력 폼 (분모, 분자 모두 비워진 입력창) -->
+                <!-- 주관식 입력 폼 -->
                 <div class="answer-input-box" id="answerInputBox">
                     <div id="inputContainer" class="answer-group">
                         <!-- JS로 동적 생성됨 -->
@@ -864,7 +867,7 @@
         let correctSolvedCount = 0;
         let wrongSolvedCount = 0;
         
-        // 📌 로블록스 레전드 장비 아이템 풀 (15개 순서대로 강화)
+        // 📌 확실하게 검증된 깔끔한 RPG 무기·방어구 아이콘 풀 (15개 순서대로 강화)
         const equipmentPool = [
             { id: 'sword1', name: '초보자의 루비 검', img: 'https://cdn-icons-png.flaticon.com/512/3429/3429170.png' },
             { id: 'shield1', name: '철제 가드 방패', img: 'https://cdn-icons-png.flaticon.com/512/3209/3209265.png' },
@@ -887,9 +890,8 @@
         let selectedEquipment = equipmentPool[0];
         let inventory = [];
 
-        // 📌 대분수 ↔ 가분수 변환 문제 데이터 (자연수 1~5, 분모 2~9 다양하게 구성)
+        // 📌 대분수 ↔ 가분수 변환 문제 데이터
         const mathQuizData = [
-            // 대분수 -> 가분수 (자연수 다양화)
             { type: 'to_improper', whole: 1, numr: 2, den: 3, ansNum: 5, ansDen: 3, hint: "자연수 1과 분모 3을 곱한 뒤(1×3=3), 분자 2를 더하세요. (3+2=5)" },
             { type: 'to_improper', whole: 2, numr: 1, den: 4, ansNum: 9, ansDen: 4, hint: "자연수 2와 분모 4를 곱한 뒤(2×4=8), 분자 1을 더하세요. (8+1=9)" },
             { type: 'to_improper', whole: 3, numr: 2, den: 5, ansNum: 17, ansDen: 5, hint: "자연수 3과 분모 5를 곱한 뒤(3×5=15), 분자 2를 더하세요. (15+2=17)" },
@@ -899,7 +901,6 @@
             { type: 'to_improper', whole: 4, numr: 2, den: 9, ansNum: 38, ansDen: 9, hint: "자연수 4와 분모 9를 곱한 뒤(4×9=36), 분자 2를 더하세요. (36+2=38)" },
             { type: 'to_improper', whole: 3, numr: 4, den: 5, ansNum: 19, ansDen: 5, hint: "자연수 3과 분모 5를 곱한 뒤(3×5=15), 분자 4를 더하세요. (15+4=19)" },
 
-            // 가분수 -> 대분수 (자연수 및 분모 다양화)
             { type: 'to_mixed', numr: 7, den: 3, ansWhole: 2, ansNum: 1, ansDen: 3, hint: "분자 7을 분모 3으로 나누면 몫이 2(자연수), 나머지가 1(분자)입니다." },
             { type: 'to_mixed', numr: 11, den: 4, ansWhole: 2, ansNum: 3, ansDen: 4, hint: "분자 11을 분모 4로 나누면 몫이 2(자연수), 나머지가 3(분자)입니다." },
             { type: 'to_mixed', numr: 17, den: 5, ansWhole: 3, ansNum: 2, ansDen: 5, hint: "분자 17을 분모 5로 나누면 몫이 3(자연수), 나머지가 2(분자)입니다." },
@@ -912,6 +913,14 @@
 
         let currentQuizIndex = 0;
         let activeQuiz = null;
+
+        // 📌 레벨별 성공 확률 및 실패 시 하락 확률 계산 함수
+        function getEnhanceRates(level) {
+            // 레벨이 올라갈수록 성공률 감소 (1성: 85% -> 15성: 35%), 실패 시 하락 확률 존재
+            let successRate = Math.max(35, 90 - (level * 4));
+            let failDropRate = level >= 5 ? Math.min(60, 20 + (level * 3)) : 0; // 5성 이상부터 실패 시 하락 위험 생김
+            return { successRate, failDropRate };
+        }
 
         function startCafé() {
             const inputEl = document.getElementById('usernameInput');
@@ -1059,8 +1068,9 @@
                 const title = document.getElementById('enhanceStatusTitle');
                 const sub = document.getElementById('enhanceStatusSub');
 
-                const successRate = Math.max(75, Math.round(95 - (heartLevel * 1.2)));
-                const isSuccess = (Math.random() * 100) <= successRate;
+                const rates = getEnhanceRates(heartLevel);
+                const roll = Math.random() * 100;
+                const isSuccess = roll <= rates.successRate;
 
                 overlay.className = "quiz-enhance-overlay active processing";
                 icon.innerText = "⚡";
@@ -1072,7 +1082,7 @@
                         overlay.className = "quiz-enhance-overlay active success";
                         icon.innerText = "🌟";
                         title.innerText = "SUCCESS! 강화 대성공!";
-                        sub.innerText = `✨ 정답! ${successRate}% 확률을 뚫고 장비가 한 단계 더 강해졌어요!`;
+                        sub.innerText = `✨ 정답! ${rates.successRate}% 확률을 뚫고 장비가 한 단계 더 강해졌어요!`;
 
                         if (heartLevel < maxLevel) heartLevel++;
                         
@@ -1094,13 +1104,23 @@
                             }, 500);
                         }
                     } else {
+                        // 실패 시 하락 판정
+                        let isDrop = false;
+                        if (heartLevel > 1 && rates.failDropRate > 0) {
+                            if ((Math.random() * 100) <= rates.failDropRate) {
+                                isDrop = true;
+                                heartLevel--;
+                            }
+                        }
+
                         overlay.className = "quiz-enhance-overlay active fail";
                         icon.innerText = "💥";
-                        title.innerText = "FAIL! 강화 실패...";
-                        sub.innerText = `🥺 아쉽게도 ${successRate}% 확률에 실패하여 잠시 주춤했어요!`;
+                        title.innerText = isDrop ? "📉 FAIL! 강화 실패 및 단계 하락..." : "💥 FAIL! 강화 실패...";
+                        sub.innerText = isDrop ? `🥺 아쉽게도 강화에 실패하여 장비 단계가 1성 하락했습니다!` : `🥺 아쉽게도 ${rates.successRate}% 확률에 실패했어요! (단계 유지)`;
                     }
 
                     updateStatsUI();
+                    updateUI();
 
                     setTimeout(() => {
                         overlay.className = "quiz-enhance-overlay";
@@ -1167,8 +1187,8 @@
             document.getElementById('heartLevelText').innerText = `${heartLevel}성`;
             document.getElementById('scoreCount').innerText = `강화 파워 ⚡ ${heartLevel}단계`;
 
-            const successRate = Math.max(75, Math.round(95 - (heartLevel * 1.2)));
-            document.getElementById('petStatus').innerText = `🔥 성공 확률: ${successRate}% 강화 도전!`;
+            const rates = getEnhanceRates(heartLevel);
+            document.getElementById('petStatus').innerText = `🔥 성공 확률: ${rates.successRate}% (하락 위험: ${rates.failDropRate}%)`;
             document.getElementById('progressText').innerText = `${heartLevel} / ${maxLevel}성 달성`;
 
             const gaugeContainer = document.getElementById('heartGaugeContainer');
