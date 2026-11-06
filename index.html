@@ -179,10 +179,13 @@
         }
 
         .zoo-stage-pet-avatar {
+            font-size: 36px;
+            filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.5));
+            display: flex;
+            align-items: center;
+            justify-content: center;
             width: 48px;
             height: 48px;
-            object-fit: contain;
-            filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.5));
         }
 
         .zoo-stage-pet-name {
@@ -276,10 +279,8 @@
             border: 1px solid #334155;
         }
 
-        .assembled-pet-box img {
-            width: 85px;
-            height: 85px;
-            object-fit: contain;
+        .assembled-pet-emoji {
+            font-size: 65px;
             filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.6));
             animation: itemFloat 2s infinite ease-in-out;
         }
@@ -717,10 +718,8 @@
             font-size: 13px;
         }
 
-        .inventory-badge img {
-            width: 24px;
-            height: 24px;
-            object-fit: contain;
+        .inventory-badge span {
+            font-size: 18px;
         }
     </style>
 </head>
@@ -770,7 +769,7 @@
                     <div class="bg-heart-container" id="bgHeartContainer"></div>
                     
                     <div class="assembled-pet-box">
-                        <img id="dessertImg" src="" alt="장비 아이템">
+                        <div id="dessertEmoji" class="assembled-pet-emoji">🗡️</div>
                     </div>
 
                     <div class="huge-heart-badge">
@@ -867,23 +866,23 @@
         let correctSolvedCount = 0;
         let wrongSolvedCount = 0;
         
-        // 📌 확실하게 검증된 깔끔한 RPG 무기·방어구 아이콘 풀 (15개 순서대로 강화)
+        // 📌 완벽하고 직관적인 레전드 RPG 장비 이모지 풀 (15개 순서대로 강화)
         const equipmentPool = [
-            { id: 'sword1', name: '초보자의 루비 검', img: 'https://cdn-icons-png.flaticon.com/512/3429/3429170.png' },
-            { id: 'shield1', name: '철제 가드 방패', img: 'https://cdn-icons-png.flaticon.com/512/3209/3209265.png' },
-            { id: 'helmet', name: '기사단의 철모', img: 'https://cdn-icons-png.flaticon.com/512/2859/2859708.png' },
-            { id: 'bow', name: '엘프의 사냥 활', img: 'https://cdn-icons-png.flaticon.com/512/3300/3300976.png' },
-            { id: 'wand', name: '마법사의 크리스탈 완드', img: 'https://cdn-icons-png.flaticon.com/512/2903/2903332.png' },
-            { id: 'armor', name: '미스릴 플레이트 아머', img: 'https://cdn-icons-png.flaticon.com/512/3043/3043916.png' },
-            { id: 'boots', name: '질풍의 헤르메스 부츠', img: 'https://cdn-icons-png.flaticon.com/512/3163/3163199.png' },
-            { id: 'dagger', name: '암살자의 섀도우 단검', img: 'https://cdn-icons-png.flaticon.com/512/3429/3429098.png' },
-            { id: 'axe', name: '바바리안의 배틀 액스', img: 'https://cdn-icons-png.flaticon.com/512/3429/3429133.png' },
-            { id: 'wings', name: '천상의 빛의 날개', img: 'https://cdn-icons-png.flaticon.com/512/3132/3132749.png' },
-            { id: 'staff', name: '드래곤 소울 스태프', img: 'https://cdn-icons-png.flaticon.com/512/2903/2903328.png' },
-            { id: 'crown', name: '왕국의 황금 왕관', img: 'https://cdn-icons-png.flaticon.com/512/2550/2550299.png' },
-            { id: 'hammer', name: '토르의 라이트닝 해머', img: 'https://cdn-icons-png.flaticon.com/512/3429/3429165.png' },
-            { id: 'sword2', name: '영원의 빛 다크소드', img: 'https://cdn-icons-png.flaticon.com/512/3429/3429180.png' },
-            { id: 'legend', name: '로블록스 마스터 레전드 블레이드', img: 'https://cdn-icons-png.flaticon.com/512/3429/3429193.png' }
+            { id: 'sword1', name: '초보자의 루비 검', icon: '🗡️' },
+            { id: 'shield1', name: '철제 가드 방패', icon: '🛡️' },
+            { id: 'helmet', name: '기사단의 철모', icon: '🪖' },
+            { id: 'bow', name: '엘프의 사냥 활', icon: '🏹' },
+            { id: 'wand', name: '마법사의 크리스탈 완드', icon: '🪄' },
+            { id: 'armor', name: '미스릴 플레이트 아머', icon: '🧥' },
+            { id: 'boots', name: '질풍의 헤르메스 부츠', icon: '🥾' },
+            { id: 'dagger', name: '암살자의 섀도우 단검', icon: '🔪' },
+            { id: 'axe', name: '바바리안의 배틀 액스', icon: '🪓' },
+            { id: 'wings', name: '천상의 빛의 날개', icon: '🦅' },
+            { id: 'staff', name: '드래곤 소울 스태프', icon: '🔱' },
+            { id: 'crown', name: '왕국의 황금 왕관', icon: '👑' },
+            { id: 'hammer', name: '토르의 라이트닝 해머', icon: '🔨' },
+            { id: 'sword2', name: '영원의 빛 다크소드', icon: '⚔️' },
+            { id: 'legend', name: '로블록스 마스터 레전드 블레이드', icon: '💎' }
         ];
         
         let currentEquipmentIndex = 0;
@@ -916,9 +915,8 @@
 
         // 📌 레벨별 성공 확률 및 실패 시 하락 확률 계산 함수
         function getEnhanceRates(level) {
-            // 레벨이 올라갈수록 성공률 감소 (1성: 85% -> 15성: 35%), 실패 시 하락 확률 존재
             let successRate = Math.max(35, 90 - (level * 4));
-            let failDropRate = level >= 5 ? Math.min(60, 20 + (level * 3)) : 0; // 5성 이상부터 실패 시 하락 위험 생김
+            let failDropRate = level >= 5 ? Math.min(60, 20 + (level * 3)) : 0;
             return { successRate, failDropRate };
         }
 
@@ -950,7 +948,7 @@
             }
             selectedEquipment = equipmentPool[currentEquipmentIndex];
             heartLevel = 1;
-            document.getElementById('dessertImg').src = selectedEquipment.img;
+            document.getElementById('dessertEmoji').innerText = selectedEquipment.icon;
             document.getElementById('petName').innerText = selectedEquipment.name;
         }
 
@@ -1104,7 +1102,6 @@
                             }, 500);
                         }
                     } else {
-                        // 실패 시 하락 판정
                         let isDrop = false;
                         if (heartLevel > 1 && rates.failDropRate > 0) {
                             if ((Math.random() * 100) <= rates.failDropRate) {
@@ -1263,14 +1260,14 @@
                     const stageEq = document.createElement('div');
                     stageEq.className = 'zoo-stage-pet';
                     stageEq.innerHTML = `
-                        <img class="zoo-stage-pet-avatar" src="${eq.img}" alt="${eq.name}">
+                        <div class="zoo-stage-pet-avatar">${eq.icon}</div>
                         <div class="zoo-stage-pet-name">${eq.name}</div>
                     `;
                     stage.appendChild(stageEq);
 
                     const badge = document.createElement('div');
                     badge.className = 'inventory-badge';
-                    badge.innerHTML = `<img src="${eq.img}" alt="${eq.name}"> 🛡️ ${eq.name} [15성 풀강]`;
+                    badge.innerHTML = `<span>${eq.icon}</span> 🛡️ ${eq.name} [15성 풀강]`;
                     inventoryContent.appendChild(badge);
                 });
             }
